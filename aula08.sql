@@ -61,3 +61,22 @@ INSERT INTO estado (id, nome, sigla, ativo) VALUES (NULL, 'PIAUÍ', 'PI', 'S');
 -- 6. Escreva o comando para inserir 2 registros da tabela estado, definindo todos os dados, exceto a chave  primária que é auto incremento.
 INSERT INTO estado (nome, sigla, ativo) VALUES ('PIAUÍ', 'PI', 'S');
 INSERT INTO estado (nome, sigla, ativo) VALUES ('PIAUÍ', 'PI', 'S');
+
+-- 6. Escreva o comando para inserir 2 registros da tabela estado, definindo todos os dados, exceto a chave  primária que é auto incremento.
+INSERT INTO estado (nome, sigla, ativo) VALUES ('AMAPÁ', 'AP', 'S');
+INSERT INTO estado (nome, sigla, ativo) VALUES ('AMAZONAS', 'AM', 'S');
+
+-- Altere o valor de uma coluna de todos os registros.
+UPDATE estado SET 
+  sigla = 'PR'
+, nome = 'PERNANBUCO'
+, ativo = 'N'
+ WHERE id = 1;
+
+-- Exclua um único registro de uma tabela sem utilizar como filtro, a chave primária.
+DELETE FROM estado WHERE nome = 'PERNANBUCO';
+
+-- 6.	Escreva o comando para selecionar todos os registros da tabela estado com todas as colunas.
+SELECT * FROM estado;
+-- 7.	Escreva o comando para seleccionar o nome de todos os registros da tabela estado.
+SELECT nome FROM estado;
