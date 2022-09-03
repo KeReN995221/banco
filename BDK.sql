@@ -50,3 +50,4 @@ id INT NOT NULL PRIMARY KEY AUTO_INCREMENT
 INSERT INTO cidade(nome, estado_id)
 VALUES ('PARANAVAÍ', 1);
 
+UPUDATE produto SET nome = 'BALÁ' 
