@@ -1,111 +1,93 @@
-/*CREATE TABLE usuario (
-                id_usuario SERIAL PRIMARY KEY NOT NULL,
-                nome_usuario VARCHAR(45),
-                email VARCHAR(100),
-                senha VARCHAR(45)
+DROP DATABASE IF EXISTS  venda_produto;
+CREATE DATABASE venda_produto;
+USE venda_produto;
+
+CREATE TABLE clientes(
+id_cliente INTEGER NOT NULL  PRIMARY KEY 
+, nome_cliente VARCHAR(255)
+, email_cliente VARCHAR(255)
+, telefone_cliente VARCHAR (20)
 );
 
-CREATE TABLE projetos (
-                id_projeto SERIAL PRIMARY KEY NOT NULL,
-                titulo VARCHAR(45),
-                data_projeto DATE,
-                url VARCHAR(100)
+CREATE TABLE produtos (
+id_produto INTEGER NOT NULL  PRIMARY KEY 
+, nome_produto VARCHAR(255)
+, preco_produto DOUBLE 
 );
 
-CREATE TABLE likes_por_projeto (
-                projeto_id INTEGER NOT NULL REFERENCES projetos(id_projeto),
-                usuario_id INTEGER NOT NULL REFERENCES usuario(id_usuario)
+
+
+CREATE TABLE pedidos (
+    id_pedido INTEGER NOT NULL PRIMARY KEY,
+    data_pedido DATE,
+    cliente_id INTEGER NOT NULL,
+    CONSTRAINT cliente_id FOREIGN KEY (cliente_id) REFERENCES clientes (id_cliente)
 );
 
-CREATE TABLE comentario (
-                id_comentario SERIAL PRIMARY KEY NOT NULL,
-                comentario VARCHAR(255),
-                data_comentario DATE,
-                projeto_id INTEGER NOT NULL REFERENCES projetos(id_projeto),
-                usuario_id INTEGER NOT NULL REFERENCES usuario(id_usuario)
+CREATE TABLE itens_pedidos(
+id_item INTEGER NOT NULL  PRIMARY KEY 
+, quantidade_itens INTEGER NOT NULL 
+, pedido_id INTEGER NOT NULL
+, produto_id INTEGER NOT NULL
+, CONSTRAINT pedido_id FOREIGN KEY (pedido_id) REFERENCES pedidos (id_pedido)
+, CONSTRAINT produto_id FOREIGN KEY (produto_id) REFERENCES produtos (id_produto)
 );
 
-CREATE TABLE likes_por_comentario (
-                usuario_id INTEGER NOT NULL REFERENCES usuario(id_usuario),
-                comentario_id INTEGER NOT NULL REFERENCES comentario(id_comentario)
+-- Inserções para a tabela "clientes"
+INSERT INTO clientes (id_cliente, nome_cliente, email_cliente, telefone_cliente)
+VALUES (1, 'João Silva', 'joao@example.com', '(11) 987654321');
+
+INSERT INTO clientes (id_cliente, nome_cliente, email_cliente, telefone_cliente)
+VALUES (2, 'Maria Santos', 'maria@example.com', '(11) 987654322');
+
+INSERT INTO clientes (id_cliente, nome_cliente, email_cliente, telefone_cliente)
+VALUES (3, 'Carlos Souza', 'carlos@example.com', '(11) 987654323');
+
+-- Inserções para a tabela "produtos"
+INSERT INTO produtos (id_produto, nome_produto, preco_produto)
+VALUES (1, 'Camiseta', 29.99);
+
+INSERT INTO produtos (id_produto, nome_produto, preco_produto)
+VALUES (2, 'Calça', 59.99);
+
+INSERT INTO produtos (id_produto, nome_produto, preco_produto)
+VALUES (3, 'Tênis', 99.99);
+
+-- Inserções para a tabela "pedidos"
+INSERT INTO pedidos (id_pedido, data_pedido, cliente_id)
+VALUES (1, '2023-05-30', 1);
+
+INSERT INTO pedidos (id_pedido, data_pedido, cliente_id)
+VALUES (2, '2023-05-31', 2);
+
+-- Inserções para a tabela "itens_pedidos"
+INSERT INTO itens_pedidos (id_item, quantidade_itens, pedido_id, produto_id)
+VALUES (1, 2, 1, 1);
+
+INSERT INTO itens_pedidos (id_item, quantidade_itens, pedido_id, produto_id)
+VALUES (2, 1, 1, 2);
+
+INSERT INTO itens_pedidos (id_item, quantidade_itens, pedido_id, produto_id)
+VALUES (3, 1, 2, 3);
+
+
+-- Encontre o nome e o e-mail de todos os clientes que fizeram pedidos
+
+SELECT c.nome_cliente, c.email_cliente,
+	(SELECT COUNT(p.cliente_id) 
+	FROM pedidos p
+	WHERE p.cliente_id = c.id_cliente) AS qtd_pedidos_por_clientes
+FROM clientes c;
+
+-- Encontre o nome do cliente que fez o pedido com o maior número de itens.
+
+SELECT c.nome_cliente
+FROM pedidos p
+JOIN clientes c ON p.cliente_id = c.id_cliente
+WHERE p.id_pedido = (
+    SELECT pedido_id
+    FROM itens_pedidos
+    GROUP BY pedido_id
+    ORDER BY SUM(quantidade_itens) DESC
+    LIMIT 1
 );
-
-INSERT INTO projetos (titulo, data_projeto)
-VALUES('Aplicação C#', '2018-04-01'),
-	('Aplicação Ionic', '2018-05-07'),
-	('Aplicação Python', '2018-08-05');
-
-
-INSERT INTO usuario (nome_usuario, email, senha)
-VALUES('Bruna Luiza', 'bruninha@gmail.com', 'abc123.'),
-	('Thiago Braga', 'thiagobraga_1@hotmail.com', 'pena093'),
-	('Osvaldo Justino', 'osvaltino@yahoo.com.br', 'osvaldit1_s'),
-	('Gabriel Fernando', 'gabriel_fnd@gmail.com', 'gabss34');
-	
-INSERT INTO comentario (comentario, projeto_id, usuario_id)
-VALUES('A Microsoft acertou com essa linguagem!', 1, 1),
-	('Parabéns pelo projeto! bem legal!', 1, 3),
-	('Super interessante! Fácil e rápido!', 2, 4),
-	('Cara, que simples fazer um app assim!', 2, 1),
-	('Linguagem muito diferente.', 3, 3),
-	('Adorei aprender Python! Parabéns!', 3, 2),
-	('Muito maneiro esse framework!', 2, 2);
-	
-INSERT INTO likes_por_projeto
-VALUES (1, 1),
-	(1, 3),
-	(2, 1),
-	(2, 2),
-	(2, 3),
-	(2, 4),
-	(3, 2);
-	
-INSERT INTO likes_por_comentario
-VALUES (1, 7),
-	(2, 7),
-	(4, 7);
-
-SELECT COUNT (c.projeto_id)
-FROM comentario c
-JOIN projetos p
-ON p.id_projeto = c.projeto_id
-GROUP BY projeto_id;
-*/
-
-SELECT p.titulo,
-   (SELECT COUNT (c.projeto_id)
-	FROM comentario c
-	WHERE p.id_projeto = c.projeto_id)AS qtd_comentarios,
-   (SELECT COUNT (l.projeto_id)
-	FROM likes_por_projeto l
-	WHERE l.projeto_id = p.id_projeto)AS qtd_likes
-FROM projetos p 
-GROUP BY p.id_projeto
-ORDER BY p.id_projeto;
-
-
-SELECT c.projeto_id
-FROM comentario c, projetos p
-WHERE c.projeto_id = p.id_projeto;
-
-SELECT p.titulo 
-FROM projetos p 
-WHERE p.id_projeto IN 
-	(SELECT c.projeto_id
-	FROM comentario c
-	WHERE c.projeto_id = p.id_projeto);
-	
-SELECT p.id_projeto, p.titulo,
-	(SELECT COUNT (c.projeto_id)
-	FROM comentario c
-	WHERE c.projeto_id = p.id_projeto)AS qtde_comentarios
-FROM projetos p;
-
-SELECT f.titulo, f.qtde_comentarios
-FROM 
-	(SELECT p.id_projeto, p.titulo,
-	    (SELECT COUNT (c.projeto_id)
-		FROM comentario c
-		WHERE c.projeto_id = p.id_projeto)AS qtde_comentarios
-	FROM projetos p) AS f
-WHERE f.qtde_comentarios > 2;
