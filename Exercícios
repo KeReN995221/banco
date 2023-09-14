@@ -1,0 +1,6 @@
+Resolva os exercícios a seguir utilizando as cláusulas LOOP, WHILE LOOP e FOR LOOP 
+
+Elabore um laço de repetição para inserir números de 1 a 10 em uma tabela chamada “numeros”.
+Utilize uma rotina de repetição que percorra uma tabela chamada “produtos” e acrescente um desconto de 10% no preço de todos os produtos até que o preço seja inferior a R$50,00.
+Crie um laço de repetição que calcule a média da coluna “notas” em uma tabela chamada “alunos”. 
+Desenvolva um laço de repetição que percorra uma tabela chamada “pedidos” e exclua todos os pedidos com o status “cancelado”.
